@@ -1380,7 +1380,7 @@ export function addReasoningContentToToolCalls(messages) {
             }
             continue;
         }
-
+        message.reasoning_content = ''
         
     }
 }
