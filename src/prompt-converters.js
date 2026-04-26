@@ -1375,9 +1375,6 @@ export function addReasoningContentToToolCalls(messages) {
 
     for (const message of messages) {
         if (!Array.isArray(message.tool_calls) || 'reasoning_content' in message) {
-            if(!message.reasoning_content){
-                message.reasoning_content = ''
-            }
             continue;
         }
         message.reasoning_content = ''
