@@ -256,6 +256,7 @@ export const tool_reasoning_modes = {
 // Providers that support interleaved reasoning forwarding in tool-call chains.
 const interleaved_reasoning_providers = [
     chat_completion_sources.OPENROUTER,
+    chat_completion_sources.DEEPSEEK
 ];
 
 export const ZAI_ENDPOINT = {
