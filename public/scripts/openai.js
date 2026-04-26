@@ -599,7 +599,7 @@ function setOpenAIMessages(chat) {
         const originModel = chat[j]?.extra?.model;
         const isSameModel = originApi === currentApi && originModel === currentModel;
         const signature = isSameModel ? chat[j]?.extra?.reasoning_signature : null;
-        const reasoning = isSameModel ? String(chat[j]?.extra?.reasoning ?? '') : '';
+        const reasoning = String(chat[j]?.extra?.reasoning ?? '');
 
         // Remove reasoning metadata from invocations if the API/model don't match
         if (Array.isArray(invocations) && invocations.length > 0) {
@@ -1028,11 +1028,13 @@ async function populateChatHistory(messages, prompts, chatCompletion, type = nul
             const toolCallMessage = await Message.createAsync(chatMessage.role, undefined, 'toolCall-' + chatMessage.identifier);
             const toolResultMessages = await Promise.all(invocations.slice().reverse().map((invocation) => Message.createAsync('tool', invocation.result || '[No content]', invocation.id)));
             await toolCallMessage.setToolCalls(invocations, includeSignature, includeToolReasoning);
+            if (chatPrompt.reasoning) toolCallMessage.reasoning = chatPrompt.reasoning;
             if (chatCompletion.canAffordAll([toolCallMessage, ...toolResultMessages])) {
                 for (const resultMessage of toolResultMessages) {
                     chatCompletion.insertAtStart(resultMessage, 'chatHistory');
                 }
                 chatCompletion.insertAtStart(toolCallMessage, 'chatHistory');
+                
             } else {
                 break;
             }
@@ -2538,6 +2540,12 @@ export async function createGenerationParameters(settings, model, type, messages
         throw new Error('messages must be an array');
     }
     messages = messages.filter(msg => msg && typeof msg === 'object');
+    messages.forEach(msg => {
+        if (msg.role === 'assistant') {
+            msg.reasoning_content = msg.reasoning || "";
+            delete msg.reasoning;
+        }
+    });
 
     // "OpenAI-like" sources
     const gptSources = [
