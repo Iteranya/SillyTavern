@@ -2841,10 +2841,14 @@ export async function createGenerationParameters(settings, model, type, messages
 
     if (reasoningContentSources.includes(settings.chat_completion_source)) {
         generate_data.messages.forEach(msg => {
-            if (msg.reasoning) {
-                msg.reasoning_content = msg.reasoning;
-                // Delete the ST-standard 'reasoning' key to avoid strict schema validation errors 
-                // on upstream providers, but keep it for Custom just in case they use OpenRouter/proxies.
+            // DeepSeek API strictly requires the reasoning_content key on all assistant messages, 
+            // even if the message has no thoughts (e.g., old messages or tool calls).
+            if (msg.role === 'assistant') {
+                msg.reasoning_content = msg.reasoning || "";
+            }
+            
+            // Delete the ST-standard 'reasoning' key to avoid strict schema validation errors
+            if (msg.reasoning !== undefined) {
                 if (settings.chat_completion_source !== chat_completion_sources.CUSTOM) {
                     delete msg.reasoning;
                 }
