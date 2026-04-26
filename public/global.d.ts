@@ -162,6 +162,7 @@ declare global {
         name?: string;
         role: string;
         content: string;
+        reasoning_content?: string;
     }
 
     // Global namespace modules

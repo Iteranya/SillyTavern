@@ -2834,6 +2834,24 @@ export async function createGenerationParameters(settings, model, type, messages
         }
     }
 
+    // Map `reasoning` to `reasoning_content` for sources that strictly require it
+    const reasoningContentSources = [
+        chat_completion_sources.DEEPSEEK,
+    ];
+
+    if (reasoningContentSources.includes(settings.chat_completion_source)) {
+        generate_data.messages.forEach(msg => {
+            if (msg.reasoning) {
+                msg.reasoning_content = msg.reasoning;
+                // Delete the ST-standard 'reasoning' key to avoid strict schema validation errors 
+                // on upstream providers, but keep it for Custom just in case they use OpenRouter/proxies.
+                if (settings.chat_completion_source !== chat_completion_sources.CUSTOM) {
+                    delete msg.reasoning;
+                }
+            }
+        });
+    }
+
     if (seedSupportedSources.includes(settings.chat_completion_source) && settings.seed >= 0) {
         generate_data.seed = settings.seed;
     }
