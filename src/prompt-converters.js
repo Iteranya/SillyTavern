@@ -1369,6 +1369,7 @@ export function embedOpenRouterMedia(messages, { audio = true, video = true } = 
  * @returns {void}
  */
 export function addReasoningContentToToolCalls(messages) {
+    console.log(messages)
     if (!Array.isArray(messages)) {
         return;
     }
