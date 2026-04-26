@@ -924,6 +924,11 @@ async function populateChatHistory(messages, prompts, chatCompletion, type = nul
         const prompt = new Prompt(chatPrompt);
         prompt.identifier = `chatHistory-${messages.length - index}`;
         const chatMessage = await Message.fromPromptAsync(promptManager.preparePrompt(prompt));
+        if (chatPrompt.reasoning) {
+            console.log("FOUND REASONING! IT'S...")
+            console.log(chatPrompt.reasoning)
+            chatMessage.reasoning = chatPrompt.reasoning;
+        }
 
         if (promptManager.serviceSettings.names_behavior === character_names_behavior.COMPLETION && prompt.name) {
             const messageName = promptManager.isValidName(prompt.name) ? prompt.name : promptManager.sanitizeName(prompt.name);
