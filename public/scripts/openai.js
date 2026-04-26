@@ -6115,7 +6115,14 @@ function getEffectiveToolReasoningMode(settings = oai_settings) {
         return tool_reasoning_modes.DISABLED;
     }
 
-    return getToolReasoningMode(settings);
+    let mode = getToolReasoningMode(settings);
+
+    // --- BYPASS HIDDEN UI: Force feature ON for DeepSeek & others ---
+    if (mode === tool_reasoning_modes.DISABLED && settings.chat_completion_source !== chat_completion_sources.OPENROUTER) {
+        mode = tool_reasoning_modes.SINCE_LAST_USER;
+    }
+
+    return mode;
 }
 
 /**
